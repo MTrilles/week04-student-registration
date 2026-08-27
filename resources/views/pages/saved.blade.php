@@ -1,6 +1,11 @@
 @extends('components.layout')
 
 @section('content')
+@include('components.theme-navbar')
+
+<!-- Roaming Ambient Light -->
+<div class="roaming-light"></div>
+
 <div class="page-intro">
     <h1>Student Records</h1>
     <p>Manage and review submitted registrations</p>
@@ -9,18 +14,44 @@
 <div class="ios-card glass-theme">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
         <span class="phase-title">Directory Database</span>
-        <a href="{{ route('registration') }}" class="ios-btn" style="width: auto; padding: 10px 20px; font-size: 13px; margin-top: 0;">
+        <a href="{{ route('registration') }}" class="ios-btn" style="width: auto; padding: 10px 20px; font-size: 13px; margin-top: 0; text-decoration: none;">
             <svg class="icon-svg" style="width:16px; height:16px;" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
             Add New
         </a>
     </div>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
         
+        /* Roaming Light Animation */
+        .roaming-light {
+            position: fixed;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle at 50% 50%, rgba(96, 165, 250, 0.12) 0%, transparent 40%);
+            z-index: -1;
+            pointer-events: none;
+            animation: roamLight 20s infinite alternate cubic-bezier(0.45, 0.05, 0.55, 0.95);
+        }
+        @keyframes roamLight {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(8%, 12%) scale(1.1); }
+            100% { transform: translate(-8%, -10%) scale(1); }
+        }
+
+        /* Intro Animations */
+        .page-intro {
+            animation: fadeInDown 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        @keyframes fadeInDown {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .glass-theme {
             font-family: 'Poppins', sans-serif;
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.08); /* Glass base */
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -29,6 +60,17 @@
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.35);
             color: #ffffff;
             animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation-delay: 0.1s;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        @keyframes slideUpFade {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Icon Transition */
+        .icon-svg, .empty-icon {
+            transition: fill 0.3s ease;
         }
 
         .phase-title {
@@ -173,6 +215,140 @@
             display: block;
             margin-bottom: 2px;
         }
+
+        /* Button Re-used Class */
+        .ios-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #0f172a;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255,255,255,0.2);
+            text-decoration: none;
+        }
+
+        .ios-btn:hover {
+            background: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255,255,255,0.3);
+        }
+
+        /* =========================================
+           LIGHT MODE OVERRIDES - High Contrast
+        ========================================= */
+        body.theme-light .roaming-light {
+            background: radial-gradient(circle at 50% 50%, rgba(37, 99, 235, 0.08) 0%, transparent 40%);
+        }
+        
+        body.theme-light .icon-svg, 
+        body.theme-light .empty-icon {
+            fill: #000000 !important; /* Force icons black */
+        }
+        
+        body.theme-light .page-intro h1,
+        body.theme-light .page-intro p {
+            color: #0f172a !important;
+            -webkit-text-fill-color: #0f172a !important;
+            text-shadow: none !important;
+            font-weight: 800 !important;
+            background: none !important;
+        }
+        
+        body.theme-light .glass-theme {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(0, 0, 0, 0.15);
+            color: #0f172a;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            font-weight: 600;
+        }
+
+        body.theme-light .phase-title {
+            color: #0f172a;
+            text-shadow: none;
+            font-weight: 800;
+        }
+
+        body.theme-light .ios-table th {
+            color: #0f172a;
+            border-bottom-color: rgba(0, 0, 0, 0.3);
+            font-weight: 800;
+        }
+
+        body.theme-light .ios-table td {
+            border-bottom-color: rgba(0, 0, 0, 0.1);
+            color: #0f172a;
+            font-weight: 600;
+        }
+        
+        body.theme-light .ios-table tbody tr:hover td {
+            background: rgba(0, 0, 0, 0.05);
+            color: #0f172a;
+        }
+
+        body.theme-light .ios-badge {
+            background: rgba(37, 99, 235, 0.15);
+            color: #1d4ed8;
+            border-color: rgba(37, 99, 235, 0.3);
+            box-shadow: none;
+            font-weight: 700;
+        }
+
+        body.theme-light .empty-state {
+            color: #0f172a;
+            font-weight: 600;
+        }
+
+        /* Modal Light Mode */
+        body.theme-light .modal-card {
+            background: rgba(255, 255, 255, 0.98);
+            border-color: rgba(0, 0, 0, 0.2);
+            color: #0f172a;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        body.theme-light .modal-close {
+            color: #1e293b;
+        }
+
+        body.theme-light .modal-close:hover {
+            color: #0f172a;
+        }
+
+        body.theme-light .modal-info-grid {
+            background: rgba(0, 0, 0, 0.05);
+            border-color: rgba(0, 0, 0, 0.15);
+        }
+
+        body.theme-light .modal-info-grid p {
+            border-bottom-color: rgba(0, 0, 0, 0.15);
+            color: #0f172a;
+            font-weight: 600;
+        }
+
+        body.theme-light .modal-label {
+            color: #1e293b;
+            font-weight: 800;
+        }
+        
+        body.theme-light .ios-btn {
+            background: #0f172a;
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(15, 23, 42, 0.2);
+        }
+
+        body.theme-light .ios-btn:hover {
+            background: #1e293b;
+            box-shadow: 0 6px 20px rgba(15, 23, 42, 0.3);
+        }
     </style>
 
     <div style="overflow-x: auto;">
@@ -189,11 +365,11 @@
             <tbody>
                 @forelse($students ?? [] as $student)
                     <tr onclick='openModal(@json($student))'>
-                        <td style="font-weight: 600; color: #60A5FA;">{{ $student->student_id }}</td>
-                        <td style="font-weight: 500;">{{ $student->first_name }} {{ $student->last_name }}</td>
+                        <td style="font-weight: 700; color: #2563eb;">{{ $student->student_id }}</td>
+                        <td style="font-weight: 600;">{{ $student->first_name }} {{ $student->last_name }}</td>
                         <td><span class="ios-badge">{{ $student->program }}</span></td>
-                        <td>{{ $student->year_level }}</td>
-                        <td style="color: #34D399; font-weight: 600;">Active</td>
+                        <td style="font-weight: 600;">{{ $student->year_level }}</td>
+                        <td style="color: #059669; font-weight: 700;">Active</td>
                     </tr>
                 @empty
                     <tr>
@@ -216,8 +392,8 @@
         <button class="modal-close" onclick="closeModal()">&times;</button>
         
         <img id="modal_img" src="" alt="Profile" class="modal-img" style="display: none;">
-        <h2 id="modal_name" style="margin: 0 0 5px 0; font-size: 22px; font-weight: 600;"></h2>
-        <p id="modal_id" style="color: #60A5FA; font-weight: 600; font-size: 14px; margin: 0 0 20px 0;"></p>
+        <h2 id="modal_name" style="margin: 0 0 5px 0; font-size: 22px; font-weight: 700;"></h2>
+        <p id="modal_id" style="color: #2563eb; font-weight: 700; font-size: 14px; margin: 0 0 20px 0;"></p>
 
         <div class="modal-info-grid">
             <p>

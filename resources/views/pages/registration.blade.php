@@ -1,6 +1,11 @@
 @extends('components.layout')
 
 @section('content')
+@include('components.theme-navbar')
+
+<!-- Roaming Ambient Light -->
+<div class="roaming-light"></div>
+
 <div class="page-intro">
     <h1>Student Portal</h1>
     <p>College of Information Technology Digital Registration</p>
@@ -12,8 +17,34 @@
 <div class="ios-card glass-theme">
     <style>
         /* Typography & Smoothness */
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
         
+        /* Roaming Light Animation */
+        .roaming-light {
+            position: fixed;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle at 50% 50%, rgba(96, 165, 250, 0.12) 0%, transparent 40%);
+            z-index: -1;
+            pointer-events: none;
+            animation: roamLight 20s infinite alternate cubic-bezier(0.45, 0.05, 0.55, 0.95);
+        }
+        @keyframes roamLight {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(8%, 12%) scale(1.1); }
+            100% { transform: translate(-8%, -10%) scale(1); }
+        }
+
+        /* Intro Animations */
+        .page-intro {
+            animation: fadeInDown 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        @keyframes fadeInDown {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .glass-theme {
             font-family: 'Poppins', sans-serif;
             background: rgba(255, 255, 255, 0.08); /* Glass base */
@@ -25,6 +56,7 @@
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.35);
             /* Simple Intro Animation */
             animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation-delay: 0.1s;
             opacity: 0;
             transform: translateY(30px);
             color: #ffffff; 
@@ -35,6 +67,11 @@
                 opacity: 1;
                 transform: translateY(0);
             }
+        }
+
+        /* Icon Transition */
+        .icon-svg {
+            transition: fill 0.3s ease;
         }
 
         .phase-indicator {
@@ -80,7 +117,7 @@
         .ios-input {
             width: 100%;
             padding: 14px 16px;
-            background: rgba(0, 0, 0, 0.25); /* Dark transparent for contrast */
+            background: rgba(0, 0, 0, 0.25);
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 12px;
             font-size: 14px;
@@ -112,7 +149,7 @@
         }
 
         select.ios-input option {
-            background-color: #1e293b; /* Solid dark background for readable dropdown */
+            background-color: #1e293b;
             color: #ffffff;
             padding: 10px;
         }
@@ -147,6 +184,7 @@
             transition: all 0.3s ease;
             margin-top: 15px;
             box-shadow: 0 4px 15px rgba(255,255,255,0.2);
+            text-decoration: none;
         }
 
         .ios-btn:hover {
@@ -256,6 +294,110 @@
             to { transform: translateX(100%); opacity: 0; }
         }
         .hidden { display: none; }
+
+        /* =========================================
+           LIGHT MODE OVERRIDES - High Contrast
+        ========================================= */
+        body.theme-light .roaming-light {
+            background: radial-gradient(circle at 50% 50%, rgba(37, 99, 235, 0.08) 0%, transparent 40%);
+        }
+        
+        body.theme-light .icon-svg {
+            fill: #000000 !important; /* Force icons black in light mode */
+        }
+
+        /* Fix Calendar Icon in Light Mode */
+        body.theme-light input[type="date"].ios-input::-webkit-calendar-picker-indicator {
+            filter: invert(0); 
+        }
+
+        /* Fix Dropdown Icon in Light Mode (Changed fill to #000000) */
+        body.theme-light select.ios-input {
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23000000%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+        }
+
+        /* Brighter Phase Badge for Light Mode */
+        body.theme-light .phase-badge {
+            background: #2563eb;
+            color: #ffffff;
+            border: 1px solid #1d4ed8;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+            font-weight: 800;
+        }
+        
+        body.theme-light .page-intro h1,
+        body.theme-light .page-intro p {
+            color: #0f172a !important;
+            -webkit-text-fill-color: #0f172a !important; 
+            text-shadow: none !important;
+            font-weight: 800 !important;
+            background: none !important;
+        }
+        body.theme-light .glass-theme {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            color: #0f172a;
+            font-weight: 600;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+        body.theme-light .phase-title {
+            color: #0f172a;
+            text-shadow: none;
+            font-weight: 800;
+        }
+        body.theme-light .ios-label {
+            color: #0f172a;
+            text-shadow: none;
+            font-weight: 700;
+        }
+        body.theme-light .ios-input {
+            background: rgba(0, 0, 0, 0.05);
+            border-color: rgba(0, 0, 0, 0.3);
+            color: #0f172a;
+            font-weight: 600;
+        }
+        body.theme-light .ios-input::placeholder {
+            color: rgba(0, 0, 0, 0.6);
+            font-weight: 500;
+        }
+        body.theme-light .scan-box {
+            border-color: rgba(0,0,0,0.4);
+            background: rgba(0,0,0,0.05);
+            color: #0f172a;
+            text-shadow: none;
+            font-weight: 700;
+        }
+        body.theme-light .toast-card {
+            background: rgba(255, 255, 255, 0.98);
+            color: #0f172a;
+            border-color: #EF4444;
+            font-weight: 600;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        body.theme-light .toast-message, 
+        body.theme-light .toast-list {
+            color: #1e293b;
+            font-weight: 600;
+        }
+        body.theme-light .ios-btn {
+            background: #0f172a;
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(15, 23, 42, 0.2);
+        }
+        body.theme-light .ios-btn:hover {
+            background: #1e293b;
+            box-shadow: 0 6px 20px rgba(15, 23, 42, 0.3);
+        }
+        body.theme-light .ios-btn-secondary {
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0,0,0,0.3);
+            color: #0f172a;
+            font-weight: 700;
+            box-shadow: none;
+        }
+        body.theme-light .ios-btn-secondary:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
     </style>
 
     <form id="registrationForm" action="{{ route('students.store') }}" method="POST" enctype="multipart/form-data">
@@ -343,7 +485,6 @@
             @error('email') <span class="validation-error">{{ $message }}</span> @enderror
 
             <label class="ios-label">Mobile Number *</label>
-            <!-- Changed to tel and capped length via javascript -->
             <input type="tel" name="mobile_number" id="field_mobile_number" class="ios-input" value="{{ old('mobile_number') }}" placeholder="09123456789" maxlength="11" oninput="formatPhoneInput(this)">
             @error('mobile_number') <span class="validation-error">{{ $message }}</span> @enderror
 
@@ -378,7 +519,6 @@
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
 <script>
-    // Set strictly 18 years ago as the max allowed birth date on page load
     document.addEventListener('DOMContentLoaded', () => {
         const dobInput = document.getElementById('field_date_of_birth');
         const today = new Date();
@@ -389,7 +529,6 @@
         dobInput.setAttribute('max', `${maxYear}-${maxMonth}-${maxDay}`);
     });
 
-    // Strip non-numbers and limit strictly to 11 digits
     function formatPhoneInput(input) {
         let sanitized = input.value.replace(/\D/g, '');
         if (sanitized.length > 11) {
@@ -398,7 +537,6 @@
         input.value = sanitized;
     }
 
-    // Limits and formats Student ID input specifically into XXXX-XXXX
     function formatStudentIdInput(input) {
         let val = input.value.replace(/\D/g, ''); 
         if (val.length > 4) {
@@ -407,7 +545,6 @@
         input.value = val;
     }
 
-    // Strict Name Format Rule: No numbers or special characters & Auto-capitalize each word
     function formatNameInput(input) {
         let cleanValue = input.value.replace(/[^a-zA-Z\s\-']/g, '');
         cleanValue = cleanValue.replace(/(^\w|\s\w|[\-']\w)/g, function(letter) {
@@ -416,7 +553,6 @@
         input.value = cleanValue;
     }
 
-    // Lower Right Toast Dialog Generator
     function showToast(message, fieldsList = []) {
         const container = document.getElementById('toastContainer');
         const toast = document.createElement('div');
@@ -451,7 +587,6 @@
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     }
 
-    // Phase Navigation with Validation Gate
     function nextPhase(targetPhase, isGoingBack = false) {
         if (isGoingBack) {
             document.querySelectorAll('.phase').forEach(el => el.classList.add('hidden'));
@@ -492,7 +627,6 @@
             if (!dob) {
                 missingFields.push('Date of Birth');
             } else {
-                // Secondary check to ensure user isn't tampering with HTML directly
                 const dobDate = new Date(dob);
                 const today = new Date();
                 let age = today.getFullYear() - dobDate.getFullYear();
@@ -535,7 +669,6 @@
         }
     });
 
-    // Highly Aggressive Integer Extractor for Student ID
     function extractStudentId(text) {
         let sanitized = text.replace(/[Oo]/g, '0').replace(/[lI|]/g, '1').replace(/[S]/g, '5')
                             .replace(/[Zz]/g, '2').replace(/[B]/g, '8').replace(/[G]/g, '6');
@@ -544,7 +677,6 @@
         return match ? `${match[1]}-${match[2]}` : '';
     }
 
-    // Auto-detect program matching specific full titles directly
     function extractProgram(text) {
         let cleanText = text.replace(/[\r\n]+/g, ' ').replace(/\s+/g, ' ');
         if (/Bachelor of Science in Information Technology/i.test(cleanText) || /Information Technology/i.test(cleanText) || /BSIT/i.test(cleanText)) return 'BSIT';
@@ -553,7 +685,6 @@
         return '';
     }
 
-    // Scans line-by-line to avoid merging Names and Program texts
     function extractParsedName(text) {
         let firstName = '', middleName = '', lastName = '';
         let lines = text.split('\n');
@@ -584,7 +715,6 @@
                 }
             );
             const rawText = result.data ? result.data.text : '';
-            console.log("RAW OCR OUTPUT:\n", rawText);
             const studentId = extractStudentId(rawText);
             const nameData = extractParsedName(rawText);
             const program = extractProgram(rawText);

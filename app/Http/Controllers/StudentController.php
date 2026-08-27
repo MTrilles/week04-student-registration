@@ -50,4 +50,13 @@ class StudentController extends Controller
     {
         return view('pages.show', compact('student'));
     }
+
+    public function confirm(Request $request, Student $student)
+    {
+        // Add any additional logic here, such as updating a "status" column to "confirmed"
+        
+        // Redirect to the records page after confirming
+        return redirect()->route('saved.registration')
+                         ->with('success', 'Student information confirmed successfully!');
+    }
 }
