@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CIT Registration Portal</title>
+    <title>College of Information Technology | Portal</title>
     <style>
         :root {
             --bg-gradient: linear-gradient(135deg, #050811 0%, #0d1527 50%, #080c18 100%);
