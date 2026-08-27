@@ -269,7 +269,7 @@
 <script>
     // Limits and formats Student ID input specifically into XXXX-XXXX
     function formatStudentIdInput(input) {
-        let val = input.value.replace(/\D/g, ''); // Strip all non-digits
+        let val = input.value.replace(/\D/g, ''); 
         if (val.length > 4) {
             val = val.substring(0, 4) + '-' + val.substring(4, 8);
         }
@@ -345,7 +345,6 @@
             const yearLevel = document.getElementById('field_year_level').value;
             const gender = document.getElementById('field_gender').value;
 
-            // Check if student ID matches exactly 4 digits - 4 digits
             if (!studentId || !/^\d{4}-\d{4}$/.test(studentId)) missingFields.push('Student ID (Must be XXXX-XXXX format)');
             if (!firstName) missingFields.push('First Name');
             if (!lastName) missingFields.push('Last Name');
@@ -392,56 +391,68 @@
         }
     });
 
-    // Extract student ID by flattening all vertical text/line breaks to combine separated numbers
+    // Highly Aggressive Integer Extractor for Student ID
     function extractStudentId(text) {
-        let sanitized = text.replace(/[Oo]/g, '0');
+        // Step 1: Translate common letters that OCR mistakes for digits
+        let sanitized = text.replace(/[Oo]/g, '0')
+                            .replace(/[lI|]/g, '1')
+                            .replace(/[S]/g, '5')
+                            .replace(/[Zz]/g, '2')
+                            .replace(/[B]/g, '8')
+                            .replace(/[G]/g, '6');
         
-        // Remove ALL spaces and newlines so vertically read characters (e.g. 0\n1\n2\n4) merge into a single string
-        let flattened = sanitized.replace(/[\s\r\n]/g, '');
+        // Step 2: Strip away absolutely everything except actual integers (0-9).
+        // Using \D forces the logic to ONLY see purely numerical characters.
+        let flattened = sanitized.replace(/\D/g, '');
         
-        // Looks for exactly 4 numbers, an optional dash (since it might be missed), and 4 numbers
-        let match = flattened.match(/(\d{4})-?(\d{4})/);
+        // Step 3: Match exactly 8 integers for the format.
+        let match = flattened.match(/(\d{4})(\d{4})/);
         return match ? `${match[1]}-${match[2]}` : '';
     }
 
-    // Auto-detect program handling explicit "Bachelor of Science in" and standard abbreviations
+    // Auto-detect program matching specific full titles directly
     function extractProgram(text) {
-        // Flatten into a single clean line for easier regex matching
         let cleanText = text.replace(/[\r\n]+/g, ' ').replace(/\s+/g, ' ');
 
-        if (/Bachelor of Science in (Information Technology|IT)/i.test(cleanText) || /BS[\s-]?Information Technology/i.test(cleanText) || /BSIT/i.test(cleanText)) {
+        if (/Bachelor of Science in Information Technology/i.test(cleanText) || /Information Technology/i.test(cleanText) || /BSIT/i.test(cleanText)) {
             return 'BSIT';
         }
-        if (/Bachelor of Science in (Computer Science|CS)/i.test(cleanText) || /BS[\s-]?Computer Science/i.test(cleanText) || /BSCS/i.test(cleanText)) {
+        if (/Bachelor of Science in Computer Science/i.test(cleanText) || /Computer Science/i.test(cleanText) || /BSCS/i.test(cleanText)) {
             return 'BSCS';
         }
-        if (/Bachelor of Science in (Information Systems|IS)/i.test(cleanText) || /BS[\s-]?Information Systems/i.test(cleanText) || /BSIS/i.test(cleanText)) {
+        if (/Bachelor of Science in Information Systems/i.test(cleanText) || /Information Systems/i.test(cleanText) || /BSIS/i.test(cleanText)) {
             return 'BSIS';
         }
         return '';
     }
 
+    // Scans line-by-line to avoid merging Names and Program texts
     function extractParsedName(text) {
         let firstName = '', middleName = '', lastName = '';
-        let cleanText = text.replace(/[\r\n]+/g, ' ');
-
-        let match3 = cleanText.match(/([a-zA-Z]{2,})[\s\-]+([a-zA-Z]\.?)\s+([a-zA-Z]{2,})/);
-        if (match3 && !/bachelor|science|technology|college/i.test(match3[0])) {
-            firstName = match3[1];
-            middleName = match3[2].replace(/[\.\-]/g, '');
-            lastName = match3[3];
-            return { firstName, middleName, lastName };
-        }
-
         let lines = text.split('\n');
+        
         for (let line of lines) {
-            line = line.trim();
-            if (/bachelor|science|technology|college/i.test(line)) continue;
-            let match2 = line.match(/^([a-zA-Z]{2,})\s+([a-zA-Z]{2,})$/);
+            let cleanLine = line.trim();
+            
+            // Skip empty lines, lines with numbers, or program names
+            if (cleanLine.length < 5 || /\d/.test(cleanLine) || /bachelor|science|technology|computer|systems|college|information/i.test(cleanLine)) {
+                continue;
+            }
+            
+            // Check for First M. Last format
+            let match3 = cleanLine.match(/^([a-zA-Z]{2,})[\s\-]+([a-zA-Z]\.?)\s+([a-zA-Z]{2,})$/);
+            if (match3) {
+                return { 
+                    firstName: match3[1], 
+                    middleName: match3[2].replace(/[\.\-]/g, ''), 
+                    lastName: match3[3] 
+                };
+            }
+
+            // Check for standard First Last format
+            let match2 = cleanLine.match(/^([a-zA-Z]{2,})\s+([a-zA-Z]{2,})$/);
             if (match2) {
-                firstName = match2[1];
-                lastName = match2[2];
-                break;
+                return { firstName: match2[1], middleName: '', lastName: match2[2] };
             }
         }
 
@@ -469,14 +480,16 @@
             );
 
             const rawText = result.data ? result.data.text : '';
+            console.log("RAW OCR OUTPUT:\n", rawText);
 
             const studentId = extractStudentId(rawText);
             const nameData = extractParsedName(rawText);
             const program = extractProgram(rawText);
 
             if (!studentId && !nameData.firstName) {
-                scanText.innerText = "Image scanned, but no ID or Name detected. Try better lighting.";
-                return;
+                scanText.innerText = "Scan completed, but fields were not recognized. Please review.";
+            } else {
+                scanText.innerText = "Scan Complete! Fields Auto-filled.";
             }
 
             if (studentId) document.getElementById('field_student_id').value = studentId;
@@ -487,8 +500,7 @@
 
             formatNameInput(document.getElementById('field_first_name'));
             formatNameInput(document.getElementById('field_last_name'));
-
-            scanText.innerText = "Scan Complete! Fields Auto-filled.";
+            
         } catch (error) {
             scanText.innerText = "Scanning failed. Please try again.";
             console.error("Tesseract Error:", error);
