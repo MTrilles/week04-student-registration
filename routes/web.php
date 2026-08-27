@@ -1,14 +1,12 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Models\Student; // Ensure you import your Student model if you have one
+use App\Http\Controllers\StudentController;
 
-Route::get('/', function () {
-    return view('pages.registration');
-})->name('registration');
+// Form
+Route::get('/', [StudentController::class, 'create'])->name('registration');
 
-Route::get('/saved', function () {
-    $students = []; 
-    
-    return view('pages.saved', compact('students'));
-})->name('saved.registration');
+// Standard Controller Routes
+Route::post('/students', [StudentController::class, 'store'])->name('students.store');
+Route::get('/saved', [StudentController::class, 'index'])->name('saved.registration');
+Route::get('/students/{student}', [StudentController::class, 'show'])->name('students.show');

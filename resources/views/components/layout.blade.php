@@ -147,4 +147,10 @@
         @yield('content')
     </div>
 </body>
+@if(session('success'))
+    <div style="background: rgba(52, 211, 153, 0.2); border: 1px solid #34D399; color: #10B981; padding: 16px; border-radius: 12px; max-width: 600px; margin: 80px auto -60px; text-align: center; font-weight: 600; backdrop-filter: blur(10px);">
+        <svg style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px;" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+        {{ session('success') }}
+    </div>
+@endif
 </html>
